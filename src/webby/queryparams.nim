@@ -47,7 +47,7 @@ proc `[]`*(query: QueryParams, key: string): string =
 proc `[]=`*(query: var QueryParams, key, value: string) =
   ## Sets the value for the key in url.query. If the key is not present, this
   ## appends a new key-value pair to the end.
-  for pair in query.mitems:
+  for pair in query.toBase.mitems:
     if pair[0] == key:
       pair[1] = value
       return
@@ -56,12 +56,12 @@ proc `[]=`*(query: var QueryParams, key, value: string) =
 proc contains*(query: QueryParams, key: string): bool =
   ## Returns true if key is in the url.query.
   ## `"name" in url.query` or `"name" notin url.query`
-  for pair in query:
+  for pair in query.toBase:
     if pair[0] == key:
       return true
 
 proc add*(query: var QueryParams, params: QueryParams) =
-  for (k, v) in params:
+  for (k, v) in params.toBase:
     query.add((k, v))
 
 proc getOrDefault*(query: QueryParams, key, default: string): string =
@@ -73,7 +73,7 @@ proc getAll*(query: QueryParams, key: string): seq[string] =
       result.add(v)
 
 proc `$`*(query: QueryParams): string =
-  for i, pair in query:
+  for i, pair in query.toBase:
     if i > 0:
       result.add '&'
     result.add encodeQueryComponent(pair[0])
